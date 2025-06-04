@@ -7,6 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "b714b00860c74424894dfb0fb54fc349"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+
   <style>
     button {
       margin: 3px;
@@ -68,26 +76,61 @@
       </fieldset>
     </form>
 
+    <!-- <div id="commented-out">
+      <h1>This div is commented out.</h1>
+    </div> -->
+
     <section id="error-btns">
-      <button>Console Log</button>
-      <button>Console Error</button>
-      <button>Console Count</button>
-      <button>Console Warn</button>
-      <button>Console Assert</button>
-      <button>Console Clear</button>
-      <button>Console Dir</button>
-      <button>Console dirxml</button>
-      <button>Console Group Start</button>
-      <button>Console Group End</button>
-      <button>Console Table</button>
-      <button>Start Timer</button>
-      <button>End Timer</button>
-      <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button id="console-log">Console Log</button>
+      <button id="console-error">Console Error</button>
+      <button id="console-count">Console Count</button>
+      <button id="console-warn">Console Warn</button>
+      <button id="console-assert">Console Assert</button>
+      <button id="console-clear">Console Clear</button>
+      <button id="console-dir">Console Dir</button>
+      <button id="console-dirxml">Console dirxml</button>
+      <button id="console-group-start">Console Group Start</button>
+      <button id="console-group-end">Console Group End</button>
+      <button id="console-table">Console Table</button>
+      <button id="start-timer">Start Timer</button>
+      <button id="end-timer">End Timer</button>
+      <button id="console-trace">Console Trace</button>
+      <button id="trigger-global-error">Trigger a Global Error</button>
+      
+      <button id="trigger-error">Trigger a Runtime Error</button>
     </section>
   </main>
 
   <script>
+    window.onerror = function (message, source, lineno, colno, errorObj){
+      console.log("Global Error:");
+      console.log("  message: ", message);
+      console.log("  source: ", source);
+      console.log("  line: ", lineno, "col: ", colno);
+      console.log("  errorObj ", errorObj);
+      return false;
+    };
+
+    class CustomError extends Error {
+      constructor(message) {
+        super(message); 
+        this.name = "Custom Error"; 
+      }
+    }
+
+    function test() {
+      throw new CustomError("This error was on purpose.");
+    }
+
+    try {
+      test();
+
+    } catch(error) {
+      console.log(error.message);
+      console.log(error.name);
+      console.log(error.stack);
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -102,6 +145,120 @@
 
     // Start your code here
     // You may move this JS to another file if you wish
+    const console_log_button = document.getElementById("console-log");
+    console_log_button.addEventListener('click', function (){
+      console.log("Console Log Demo");
+    });
+
+    const console_error_button = document.getElementById("console-error");
+    console_error_button.addEventListener('click', function (){
+      console.error("Console Error Demo");
+    });
+
+    const console_count_button = document.getElementById("console-count");
+    console_count_button.addEventListener('click', function (){
+      console.count("Console Count Demo");
+    });
+
+    const console_warn_button = document.getElementById("console-warn");
+    console_warn_button.addEventListener('click', function (){
+      console.warn("Console Warn Demo");
+    });
+
+    const console_assert_button = document.getElementById("console-assert");
+    console_assert_button.addEventListener('click', function (){
+      const x = 5;
+      const y = 3;
+      const reason = 'x is expected to be less than y';
+      console.assert(x < y, {x, y, reason});
+    });
+
+    const console_clear_button = document.getElementById("console-clear");
+    console_clear_button.addEventListener('click', function (){
+      console.clear();
+    });
+
+    const console_dir_button = document.getElementById("console-dir");
+    console_dir_button.addEventListener('click', function(){
+      console.dir(document.head);
+    });
+
+    const console_dirxml_button = document.getElementById("console-dirxml");
+    console_dirxml_button.addEventListener('click', function (){
+      console.dirxml(document.head);
+    });
+
+    const console_group_start_button = document.getElementById("console-group-start");
+    const label = 'Label';
+    console_group_start_button.addEventListener('click', function (){
+      console.group(label);
+    });
+
+    const console_group_end_button = document.getElementById("console-group-end");
+    console_group_end_button.addEventListener('click', function (){
+      console.groupEnd(label);
+    });
+
+    const console_table_button = document.getElementById('console-table');
+    console_table_button.addEventListener('click', function (){
+      var people = [
+      {
+        first: 'René',
+        last: 'Magritte',
+      },
+      {
+        first: 'Chaim',
+        last: 'Soutine',
+        birthday: '18930113',
+      },
+      {
+        first: 'Henri',
+        last: 'Matisse',
+      }
+      ];
+      console.table(people);
+    });
+
+    const start_timer_button = document.getElementById('start-timer');
+    start_timer_button.addEventListener('click', function (){
+      console.time();
+    });
+
+    const end_timer_button = document.getElementById('end-timer');
+    end_timer_button.addEventListener('click', function (){
+      console.timeEnd();
+    });
+
+    const console_trace_button = document.getElementById('console-trace');
+    console_trace_button.addEventListener('click', function (){
+      const first = () => { second(); };
+      const second = () => { third(); };
+      const third = () => { fourth(); };
+      const fourth = () => { console.trace(); };
+      first();
+    });
+
+    const trigger_global_error_button = document.getElementById('trigger-global-error');
+    trigger_global_error_button.addEventListener('click', function (){
+      document.getElementById('commented-out').innerText = "hi";
+    });
+
+    const trigger_error_button = document.getElementById('trigger-error');
+    trigger_error_button.addEventListener("click", () => {
+      try{
+        const section = document.getElementById('commented-out');
+        section.innerHTML = "Will fail if null.";
+      } 
+      catch(error){
+        console.log("Error: ", error);
+      }
+      finally{
+        console.log("Try/Catch Complete.");
+      }
+    });
+
+    
+
   </script>
 </body>
 
